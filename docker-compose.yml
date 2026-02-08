@@ -1,0 +1,122 @@
+services:
+  # MinIO Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: file_manager_minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - file_manager_network
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: file_manager_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - file_manager_network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API Service
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: file_manager_api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGO_URI=mongodb://mongodb:27017/file_manager
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_USE_SSL=false
+      - MINIO_BUCKET_NAME=files
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      minio:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - uploads_data:/app/uploads
+    networks:
+      - file_manager_network
+
+  # Worker Service (scalable)
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongodb:27017/file_manager
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_USE_SSL=false
+      - MINIO_BUCKET_NAME=files
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      minio:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - file_manager_network
+    volumes:
+      - uploads_data:/app/uploads
+    deploy:
+      replicas: 1
+
+  # Client Service
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: file_manager_client
+    ports:
+      - "8080:80"
+    networks:
+      - file_manager_network
+      - tunnel_network
+    depends_on:
+      - api
+
+networks:
+  file_manager_network:
+    driver: bridge
+  tunnel_network:
+    driver: bridge
+
+volumes:
+  minio_data:
+  rabbitmq_data:
+  uploads_data:

@@ -1,0 +1,576 @@
+:root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface-hover: #1a1a1a;
+    --border: #2a2a2a;
+    --text: #fafafa;
+    --text-muted: #888;
+    --accent: #fff;
+    --error: #ff4444;
+    --success: #00ff88;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+.app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.logo {
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.main-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) 1fr;
+    min-height: 0;
+}
+
+.upload-section {
+    border-right: 1px solid var(--border);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.list-section {
+    padding: 1.25rem;
+    overflow: auto;
+}
+
+.loading {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* Upload */
+.upload-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.drop-zone {
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    padding: 2rem 1rem;
+    text-align: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.drop-zone:hover,
+.drop-zone.dragging {
+    border-color: var(--accent);
+    background: var(--surface-hover);
+}
+
+.icon-container {
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.drop-zone h3 {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.drop-zone p {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.browse-btn {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 0.45rem 0.9rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.browse-btn:hover {
+    opacity: 0.85;
+}
+
+.progress-container {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--success);
+    transition: width 0.2s ease;
+}
+
+.progress-text {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    min-width: 2rem;
+    text-align: right;
+}
+
+.error-message {
+    margin-top: 0.75rem;
+    color: var(--error);
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+/* Upload Info Panel */
+.upload-info {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.upload-info h4 {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.6rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.3rem 0.75rem;
+    font-size: 0.75rem;
+}
+
+.info-label {
+    color: var(--text-muted);
+}
+
+.info-value {
+    color: var(--text);
+}
+
+/* File List */
+.file-list-container h2 {
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    color: var(--text-muted);
+}
+
+.file-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.file-table th:nth-child(1) {
+    width: 45%;
+}
+
+.file-table th:nth-child(2) {
+    width: 15%;
+}
+
+.file-table th:nth-child(3) {
+    width: 25%;
+}
+
+.file-table th:nth-child(4) {
+    width: 15%;
+}
+
+.file-table th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.file-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    height: 56px;
+}
+
+.file-table tr:last-child td {
+    border-bottom: none;
+}
+
+.file-table tr:hover td {
+    background: var(--surface-hover);
+}
+
+.file-name {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 400;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-icon {
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.actions {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.action-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 0.3rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin-left: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn:hover {
+    color: var(--text);
+    border-color: var(--text-muted);
+}
+
+.action-btn.delete:hover {
+    color: var(--error);
+    border-color: var(--error);
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 2rem 1rem;
+    font-size: 0.8rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .upload-section {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+}
+
+/* Thumbnails */
+.th-thumb {
+    width: 60px !important;
+}
+
+.thumbnail-cell {
+    padding: 0.3rem 0.5rem !important;
+}
+
+.thumbnail {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.thumbnail:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+}
+
+.thumbnail-placeholder {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-hover);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.thumbnail-placeholder:hover {
+    background: var(--border);
+}
+
+.file-name-link {
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.file-name-link:hover {
+    color: var(--success);
+    text-decoration: underline;
+}
+
+/* Preview Modal */
+.preview-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.preview-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+}
+
+.preview-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 400px;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.preview-action-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 0.4rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.preview-action-btn:hover {
+    color: var(--text);
+    border-color: var(--text-muted);
+}
+
+.preview-action-btn.close:hover {
+    color: var(--error);
+    border-color: var(--error);
+}
+
+.preview-content {
+    padding: 1rem;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
+
+/* Preview Types */
+.preview-image {
+    max-width: 100%;
+    max-height: 75vh;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.preview-video {
+    max-width: 100%;
+    max-height: 75vh;
+    border-radius: 4px;
+    background: #000;
+}
+
+.preview-audio-container {
+    text-align: center;
+    padding: 2rem;
+}
+
+.audio-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.audio-filename {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+}
+
+.preview-audio {
+    width: 100%;
+    min-width: 300px;
+}
+
+.preview-pdf {
+    width: 80vw;
+    height: 75vh;
+    border: none;
+    border-radius: 4px;
+}
+
+.preview-unsupported {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+}
+
+.preview-unsupported h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 1rem 0 0.5rem;
+    color: var(--text);
+}
+
+.file-type {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.unsupported-msg {
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.download-btn:hover {
+    opacity: 0.85;
+}
+
+/* Table adjustments for new column */
+.file-table th:nth-child(1) {
+    width: 60px;
+}
+
+.file-table th:nth-child(2) {
+    width: 35%;
+}
+
+.file-table th:nth-child(3) {
+    width: 12%;
+}
+
+.file-table th:nth-child(4) {
+    width: 20%;
+}
+
+.file-table th:nth-child(5) {
+    width: 15%;
+}

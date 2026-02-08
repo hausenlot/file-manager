@@ -59,19 +59,9 @@ const startWorker = async () => {
                     notifyStatusUpdate(channel, fileId, 'processing');
 
                     // 2. Upload to MinIO
-                    // Reconstruct absolute path if needed, assuming API and Worker share filesystem 
-                    // or run in same context for this "local" setup.
-                    // In real world, they might share a volume. 
-                    // Here we assume "filePath" is reachable (e.g. "../api/uploads/...")
-
-                    // Adjustment: The filePath from API is likely relative to API root "uploads/..."
-                    // We need to resolve it relative to where the worker runs OR assume absolute/shared volume.
-                    // Let's assume we run worker from project root or share the folder.
-                    // For this specific setup: /home/polo/personal_projects/file_manager/api/uploads/...
-
-                    // FIX: We need to point to the correct file path. 
-                    // We can use an absolute path logic or relative to "api" folder.
-                    const absoluteFilePath = path.resolve('../api', filePath);
+                    // Both API and Worker share the uploads volume at /app/uploads
+                    // filePath from API is "uploads/filename.ext", resolve to /app/uploads/filename.ext
+                    const absoluteFilePath = path.resolve('/app', filePath);
 
                     const s3Url = await uploadFileToMinio(absoluteFilePath, path.basename(filePath), fileDoc.mimetype);
 

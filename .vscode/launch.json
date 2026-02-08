@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug API",
+            "program": "${workspaceFolder}/api/src/server.js",
+            "cwd": "${workspaceFolder}/api",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "envFile": "${workspaceFolder}/api/.env"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Worker",
+            "program": "${workspaceFolder}/worker/src/worker.js",
+            "cwd": "${workspaceFolder}/worker",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "envFile": "${workspaceFolder}/worker/.env"
+        }
+    ]
+}
