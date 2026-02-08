@@ -2,3 +2,4 @@ AGENT.md
 .env
 node_modules
 test-*.js
+docker-compose.yml

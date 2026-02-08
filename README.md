@@ -20,7 +20,7 @@ They communicate via **RabbitMQ** for task distribution and share a **MongoDB** 
 ## Getting Started
 
 1.  **Clone the repository**.
-2.  **Install dependencies**:
+2.  **Install dependencies** (if running locally):
     ```bash
     cd api && npm install
     cd ../worker && npm install
@@ -28,9 +28,20 @@ They communicate via **RabbitMQ** for task distribution and share a **MongoDB** 
 3.  **Configuration**:
     -   Copy `api/.env.example` to `api/.env` and configure accordingly.
     -   Copy `worker/.env.example` to `worker/.env` and configure accordingly.
+    -   **Docker Setup**:
+        Copy `docker-compose.example.yml` to `docker-compose.yml` and update the credentials and environment variables as needed.
+        ```bash
+        cp docker-compose.example.yml docker-compose.yml
+        ```
+
 4.  **Run the services**:
-    -   Start the API: `cd api && npm run dev`
-    -   Start the Worker: `cd worker && node src/worker.js` (or use a process manager)
+    -   **Using Docker** (Recommended):
+        ```bash
+        docker-compose up --build
+        ```
+    -   **Running Locally**:
+        -   Start the API: `cd api && npm run dev`
+        -   Start the Worker: `cd worker && node src/worker.js` (or use a process manager)
 
 ## Features
 

@@ -29,6 +29,8 @@ The background worker service for the file manager system. It processes files up
     ```
     The worker will connect to RabbitMQ and start consuming messages from the `file_processing` queue.
 
+    > **Note**: For Docker usage, refer to the [root README](../README.md).
+
 ## Features
 
 -   **Asynchronous Processing**: Handles file processing tasks offloaded by the API.

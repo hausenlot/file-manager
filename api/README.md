@@ -30,6 +30,8 @@ The API service for the file manager system. It provides endpoints for file uplo
     ```
     Starts the server using `node src/server.js`.
 
+    > **Note**: For Docker usage, refer to the [root README](../README.md).
+
 ## API Endpoints
 
 -   `POST /upload`: Upload a file.
