@@ -31,8 +31,18 @@ export const ensureBucketExists = async () => {
 
 export const uploadFileToMinio = async (filePath, destinationName, mimetype) => {
     try {
-        const fileStream = fs.createReadStream(filePath);
+        // Check file exists before creating stream to avoid unhandled error events
+        if (!fs.existsSync(filePath)) {
+            throw new Error(`File not found: ${filePath}`);
+        }
+
         const fileStat = fs.statSync(filePath);
+        const fileStream = fs.createReadStream(filePath);
+
+        // Handle stream errors to prevent unhandled 'error' events crashing the process
+        fileStream.on('error', (err) => {
+            console.error(`Stream error for ${filePath}:`, err.message);
+        });
 
         await minioClient.putObject(BUCKET_NAME, destinationName, fileStream, fileStat.size, {
             'Content-Type': mimetype,
