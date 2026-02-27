@@ -12,12 +12,11 @@ jobs:
 
       - name: 🚀 Deploy App Stack
         run: |
-          # 1. Stop the old stack (removes orphans if you renamed things)
-          docker compose down --remove-orphans
+          # Use -f to target your specific example file
+          docker compose -f docker-compose.example.yml down --remove-orphans
           
-          # 2. Build and Start the new stack
-          # We use the new network config to link to MongoDB and Cloudflare
-          docker compose up --build -d
+          # Build and start using the example file
+          docker compose -f docker-compose.example.yml up --build -d
           
-          # 3. Clean up space
+          # Clean up space
           docker image prune -f
