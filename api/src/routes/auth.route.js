@@ -1,9 +1,16 @@
 import express from 'express';
-import { generateToken } from '../controllers/auth.controller.js';
+import { register, login, getMe } from '../controllers/auth.controller.js';
+import auth from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
-// GET /auth/token
-router.get('/token', generateToken);
+// POST /auth/register
+router.post('/register', register);
+
+// POST /auth/login
+router.post('/login', login);
+
+// GET /auth/me (protected)
+router.get('/me', auth, getMe);
 
 export default router;

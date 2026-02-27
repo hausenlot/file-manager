@@ -2,12 +2,17 @@ import amqp from 'amqplib';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 import File from './models/file.model.js';
 import { ensureBucketExists, uploadFileToMinio } from './services/minio.service.js';
 import { notifyStatusUpdate } from './services/notification.service.js';
 
 dotenv.config();
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// In Docker: /app, in local dev: resolve to the sibling api directory
+const UPLOAD_BASE_DIR = process.env.UPLOAD_BASE_DIR || path.resolve(__dirname, '../../api');
 
 const connectDB = async () => {
     try {
@@ -61,7 +66,7 @@ const startWorker = async () => {
                     // 2. Upload to MinIO
                     // Both API and Worker share the uploads volume at /app/uploads
                     // filePath from API is "uploads/filename.ext", resolve to /app/uploads/filename.ext
-                    const absoluteFilePath = path.resolve('/app', filePath);
+                    const absoluteFilePath = path.resolve(UPLOAD_BASE_DIR, filePath);
 
                     const s3Url = await uploadFileToMinio(absoluteFilePath, path.basename(filePath), fileDoc.mimetype);
 

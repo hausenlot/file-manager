@@ -50,7 +50,8 @@ const Upload = ({ onUploadSuccess }) => {
             onUploadSuccess();
             setUploading(false);
         } catch (err) {
-            setError('Upload failed. Please try again.');
+            const msg = err.response?.data?.message || 'Upload failed. Please try again.';
+            setError(msg);
             setUploading(false);
         }
     };

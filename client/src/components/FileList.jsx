@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { FileText, Download, Trash2, Image, Film, Music, FileType } from 'lucide-react';
+import { FileText, Download, Trash2, Image, Film, Music, FileType, Globe, Lock } from 'lucide-react';
 import { deleteFile, getDownloadUrl, getStreamUrl } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import FilePreview from './FilePreview';
 
 const FileList = ({ files, refreshFiles }) => {
     const [selectedFile, setSelectedFile] = useState(null);
+    const { user } = useAuth();
 
     const handleDelete = async (uuid) => {
         if (confirm('Are you sure you want to delete this file?')) {
@@ -19,7 +21,6 @@ const FileList = ({ files, refreshFiles }) => {
 
     const handleDownload = (uuid, filename) => {
         const url = getDownloadUrl(uuid);
-        // Create a temporary link to force download
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', filename);
@@ -45,6 +46,9 @@ const FileList = ({ files, refreshFiles }) => {
     };
 
     const isImageFile = (mimetype) => mimetype.startsWith('image/');
+
+    const isOwnFile = (file) => user && file.uploader && file.uploader === user._id;
+    const isPublicFile = (file) => !file.uploader;
 
     return (
         <>
@@ -87,6 +91,15 @@ const FileList = ({ files, refreshFiles }) => {
                                         >
                                             {file.originalName}
                                         </span>
+                                        {isPublicFile(file) ? (
+                                            <span className="ownership-badge public" title="Public file">
+                                                <Globe size={12} />
+                                            </span>
+                                        ) : isOwnFile(file) ? (
+                                            <span className="ownership-badge private" title="Your private file">
+                                                <Lock size={12} />
+                                            </span>
+                                        ) : null}
                                     </td>
                                     <td>{formatSize(file.size)}</td>
                                     <td>{file.mimetype}</td>

@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { generalLimiter } from './middlewares/rateLimit.middleware.js';
 
 const app = express();
 
@@ -14,7 +13,7 @@ app.use(helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
 app.use(morgan('dev'));
-app.use(generalLimiter); // Apply general rate limit to all routes
+
 
 // Routes
 import healthRouter from './routes/health.route.js';

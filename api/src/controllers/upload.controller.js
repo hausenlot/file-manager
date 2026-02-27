@@ -23,7 +23,7 @@ export const uploadFile = async (req, res) => {
             size: req.file.size,
             path: req.file.path,
             status: 'pending',
-            // uploader: req.user.id // assuming auth middleware provides this
+            uploader: req.user?.id || null, // null = public (guest upload)
         });
 
         // 3. Publish to Queue
@@ -31,7 +31,6 @@ export const uploadFile = async (req, res) => {
         const message = {
             fileId: newFile.uuid,
             filePath: newFile.path,
-            // Add other necessary metadata like originalName, mimetype if needed by worker
         };
 
         await publishToQueue(queueName, message);
@@ -48,8 +47,6 @@ export const uploadFile = async (req, res) => {
 
     } catch (error) {
         console.error('Upload Error:', error);
-        // Clean up file if DB insert fails? 
-        // For now, we keep it simple as per instructions.
         res.status(500).json({
             success: false,
             message: 'Server Error during upload',
