@@ -68,7 +68,7 @@ services:
       - uploads_data:/app/uploads
     networks:
       - file_manager_network
-      - global_infra_net  # <--- REQUIRED for Database Access
+      - global-infra  # <--- REQUIRED for Database Access
 
   # Worker Service - CONNECTED TO GLOBAL MONGODB
   worker:
@@ -92,7 +92,7 @@ services:
         condition: service_healthy
     networks:
       - file_manager_network
-      - global_infra_net # <--- REQUIRED for Database Access
+      - global-infra # <--- REQUIRED for Database Access
     volumes:
       - uploads_data:/app/uploads
     deploy:
@@ -124,6 +124,7 @@ networks:
   # The external network where 'cloudflared' lives
   cloudflare-net:
     external: true
+    name: cloudflare-net
 
 volumes:
   minio_data:
