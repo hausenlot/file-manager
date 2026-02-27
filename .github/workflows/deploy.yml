@@ -12,10 +12,11 @@ jobs:
 
       - name: 🚀 Deploy App Stack
         run: |
-          # Use -f to target your specific example file
+          # Use -f to target your example file
+          # 'down' ensures names are released before 'up' starts
           docker compose -f docker-compose.example.yml down --remove-orphans
           
-          # Build and start using the example file
+          # Now start the fresh build
           docker compose -f docker-compose.example.yml up --build -d
           
           # Clean up space
