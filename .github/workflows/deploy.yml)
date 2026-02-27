@@ -1,0 +1,23 @@
+name: Deploy to Server
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Deploy App Stack
+        run: |
+          # 1. Stop the old stack (removes orphans if you renamed things)
+          docker compose down --remove-orphans
+          
+          # 2. Build and Start the new stack
+          # We use the new network config to link to MongoDB and Cloudflare
+          docker compose up --build -d
+          
+          # 3. Clean up space
+          docker image prune -f

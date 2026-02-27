@@ -1,5 +1,5 @@
 services:
-  # MinIO Object Storage
+  # MinIO and RabbitMQ (Internal to this stack)
   minio:
     image: minio/minio:latest
     container_name: file_manager_minio
@@ -7,8 +7,8 @@ services:
       - "9000:9000"
       - "9001:9001"
     environment:
-      MINIO_ROOT_USER: minioadmin # Change this in production
-      MINIO_ROOT_PASSWORD: minioadmin # Change this in production
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
@@ -20,7 +20,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # RabbitMQ Message Broker
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: file_manager_rabbitmq
@@ -28,8 +27,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: guest # Change this in production
-      RABBITMQ_DEFAULT_PASS: guest # Change this in production
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
@@ -40,7 +39,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # API Service
+  # API Service - CONNECTED TO GLOBAL MONGODB
   api:
     build:
       context: ./api
@@ -51,14 +50,15 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      # Points to the 'mongodb' container on the global network
       - MONGO_URI=mongodb://mongodb:27017/file_manager
       - MINIO_ENDPOINT=minio
       - MINIO_PORT=9000
-      - MINIO_ACCESS_KEY=minioadmin # Match MINIO_ROOT_USER
-      - MINIO_SECRET_KEY=minioadmin # Match MINIO_ROOT_PASSWORD
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
       - MINIO_USE_SSL=false
       - MINIO_BUCKET_NAME=files
-      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672 # Match RabbitMQ creds
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672
     depends_on:
       minio:
         condition: service_healthy
@@ -68,8 +68,9 @@ services:
       - uploads_data:/app/uploads
     networks:
       - file_manager_network
+      - global_infra_net  # <--- REQUIRED for Database Access
 
-  # Worker Service (scalable)
+  # Worker Service - CONNECTED TO GLOBAL MONGODB
   worker:
     build:
       context: ./worker
@@ -79,11 +80,11 @@ services:
       - MONGO_URI=mongodb://mongodb:27017/file_manager
       - MINIO_ENDPOINT=minio
       - MINIO_PORT=9000
-      - MINIO_ACCESS_KEY=minioadmin # Match MINIO_ROOT_USER
-      - MINIO_SECRET_KEY=minioadmin # Match MINIO_ROOT_PASSWORD
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
       - MINIO_USE_SSL=false
       - MINIO_BUCKET_NAME=files
-      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672 # Match RabbitMQ creds
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672
     depends_on:
       minio:
         condition: service_healthy
@@ -91,12 +92,13 @@ services:
         condition: service_healthy
     networks:
       - file_manager_network
+      - global_infra_net # <--- REQUIRED for Database Access
     volumes:
       - uploads_data:/app/uploads
     deploy:
       replicas: 1
 
-  # Client Service
+  # Client Service - CONNECTED TO CLOUDFLARE
   client:
     build:
       context: ./client
@@ -106,15 +108,22 @@ services:
       - "8080:80"
     networks:
       - file_manager_network
-      - tunnel_network
+      - cloudflare-net # <--- Exposes this container to your Tunnel
     depends_on:
       - api
 
 networks:
   file_manager_network:
     driver: bridge
-  tunnel_network:
-    driver: bridge
+  
+  # The external network where 'mongodb' lives
+  global_infra_net:
+    external: true
+    name: global-infra
+
+  # The external network where 'cloudflared' lives
+  cloudflare-net:
+    external: true
 
 volumes:
   minio_data:
