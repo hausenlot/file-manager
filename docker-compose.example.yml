@@ -68,7 +68,7 @@ services:
       - uploads_data:/app/uploads
     networks:
       - file_manager_network
-      - global-infra  # <--- REQUIRED for Database Access
+      - global_infra_net  # <--- REQUIRED for Database Access
 
   # Worker Service - CONNECTED TO GLOBAL MONGODB
   worker:
@@ -92,7 +92,7 @@ services:
         condition: service_healthy
     networks:
       - file_manager_network
-      - global-infra # <--- REQUIRED for Database Access
+      - global_infra_net # <--- REQUIRED for Database Access
     volumes:
       - uploads_data:/app/uploads
     deploy:
