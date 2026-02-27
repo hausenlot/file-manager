@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const API_URL = '/api'; // Relative path for Nginx proxy
-const API_URL = 'http://localhost:3000';
+const API_URL = '/api'; // Relative path for Nginx proxy
+// const API_URL = 'http://localhost:3000';
 
 // Create axios instance
 const api = axios.create({
